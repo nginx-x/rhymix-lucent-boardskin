@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">Lucent</title>
+	<title xml:lang="en">Lucent</title>
+	<description xml:lang="ko">Lucent 레이아웃과 어울리는 깨끗하고 모던한 글래스모피즘 게시판 스킨</description>
+	<description xml:lang="en">A clean, modern glassmorphism board skin that pairs with the Lucent layout.</description>
+	<version>1.0.0</version>
+	<date>2026-05-31</date>
+	<author email_address="geunhong.kim@ghkim.net" link="https://github.com/nginx-x">
+		<name xml:lang="ko">nginx_x</name>
+		<name xml:lang="en">nginx_x</name>
+	</author>
+	<license>GPL v2</license>
+	<extra_vars>
+		<var name="title_image" type="image">
+			<title xml:lang="ko">게시판 제목 이미지</title>
+			<title xml:lang="en">Board title image</title>
+			<description xml:lang="ko">작성하면 게시판 상단에 표시됩니다.</description>
+			<description xml:lang="en">Shown at the top of the board when set.</description>
+		</var>
+		<var name="title_alt" type="text">
+			<title xml:lang="ko">제목 이미지 대체 텍스트</title>
+			<title xml:lang="en">Title image alt text</title>
+		</var>
+		<var name="accent_color" type="text">
+			<title xml:lang="ko">강조 색상 덮어쓰기 (HEX) — 비우면 레이아웃 색상 상속</title>
+			<title xml:lang="en">Accent color override (HEX) — leave empty to inherit from layout</title>
+		</var>
+		<var name="list_density" type="select">
+			<title xml:lang="ko">목록 밀도</title>
+			<title xml:lang="en">List density</title>
+			<options value="comfortable"><title xml:lang="ko">넉넉하게</title><title xml:lang="en">Comfortable</title></options>
+			<options value="compact"><title xml:lang="ko">조밀하게</title><title xml:lang="en">Compact</title></options>
+		</var>
+	</extra_vars>
+</skin>

@@ -1,0 +1,121 @@
+<div class="board_read">
+	<!-- READ HEADER -->
+	<div class="read_header">
+		<div class="read_title_wrapper">
+			<a href="{getUrl('', 'mid', $mid, 'category', $oDocument->get('category_srl'))}" class="category" cond="$module_info->use_category=='Y' && $oDocument->get('category_srl')">{$category_list[$oDocument->get('category_srl')]->title}</a>
+			<h1 class="read_title">
+				<a href="{$oDocument->getUrl()}">{$oDocument->getTitle()}</a>
+			</h1>
+		</div>
+		<div class="read_meta">
+			<!-- Author -->
+			<div class="meta_item author" cond="($module_info->display_author ?? 'Y') !== 'N'">
+				<svg class="meta_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+				<a cond="$oDocument->getMemberSrl() <= 0 && $oDocument->isExistsHomepage()" href="{$oDocument->getHomepageUrl()}" target="_blank" rel="noopener">{$oDocument->getNickName()}</a>
+				<span cond="$oDocument->getMemberSrl() <= 0 && !$oDocument->isExistsHomepage()">{$oDocument->getNickName()}</span>
+				<a cond="$oDocument->getMemberSrl() > 0" href="#popup_menu_area" class="member_{$oDocument->get('member_srl')}" onclick="return false">{$oDocument->getNickName()}</a>
+			</div>
+			
+			<!-- Time -->
+			<div class="meta_item time">
+				<svg class="meta_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+				<span>{$oDocument->getRegdate('Y.m.d H:i')}</span>
+			</div>
+			
+			<!-- Read count -->
+			<div class="meta_item readed">
+				<svg class="meta_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+				<span>{$lang->readed_count} <strong>{$oDocument->get('readed_count')}</strong></span>
+			</div>
+			
+			<!-- Vote count -->
+			<div class="meta_item voted" cond="$oDocument->get('voted_count')!=0">
+				<svg class="meta_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+				<span>{$lang->cmd_vote} <strong>{$oDocument->get('voted_count')}</strong></span>
+			</div>
+		</div>
+	</div>
+	<!-- /READ HEADER -->
+	<!-- Extra Output -->
+	<div class="exOut" cond="$oDocument->isExtraVarsExists() && $oDocument->isAccessible()">
+		<table border="1" cellspacing="0" summary="Extra Form Output">
+			<tr loop="$oDocument->getExtraVars() => $key,$val" cond="$val->hasValue()">
+				<th scope="row">{$val->name}</th>
+				<td>{$val->getValueHTML()}&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+	<!-- /Extra Output -->
+	<!-- READ BODY -->
+	<div class="read_body">
+		<!--@if(!$oDocument->isAccessible())-->
+		<form action="./" method="get" onsubmit="return procFilter(this, input_password)">
+			<input type="hidden" name="mid" value="{$mid}" />
+			<input type="hidden" name="page" value="{$page}" />
+			<input type="hidden" name="document_srl" value="{$oDocument->document_srl}" />
+			<p><label for="cpw">{$lang->msg_is_secret} {$lang->msg_input_password}</label></p>
+			<p><input type="password" name="password" id="cpw" class="iText" /><input type="submit" value="{$lang->cmd_input}" class="btn" />
+			</p>
+		</form>
+		<!--@else-->
+		{$oDocument->getContent(false)}
+		<!--@end-->
+	</div>
+	<!-- /READ BODY -->
+	<!-- READ FOOTER -->
+	<div class="read_footer">
+		<div cond="$oDocument->hasUploadedFiles()" class="fileList">
+			<button type="button" class="toggleFile" onclick="jQuery(this).next('ul.files').toggle();">{$lang->uploaded_file} [<strong>{$oDocument->get('uploaded_count')}</strong>]</button>
+			<ul class="files">
+				<li loop="$oDocument->getUploadedFiles()=>$key,$file"><a href="{getUrl('')}{$file->download_url}">{$file->source_filename} <span class="fileSize">[File Size:{FileHandler::filesize($file->file_size)}/Download:{number_format($file->download_count)}]</span></a></li>
+			</ul>
+		</div>
+		<div class="tns">
+			{@ $tag_list = $oDocument->get('tag_list') }
+			<span class="tags" cond="count($tag_list ?: [])">
+				<!--@foreach($tag_list as $tag)-->
+					<a href="{getUrl('', 'mid', $mid, 'search_target', 'tag', 'search_keyword', $tag)}" class="tag" rel="tag">{escape($tag, false)}</a><span>,</span>
+				<!--@end-->
+			</span>
+			<a class="document_{$oDocument->document_srl} action" href="#popup_menu_area" onclick="return false">{$lang->cmd_document_do}</a>
+			<ul class="sns">
+				<li class="twitter link"><a href="https://twitter.com/">Twitter</a></li>
+				<li class="facebook link"><a href="https://www.facebook.com/">Facebook</a></li>
+				<li class="delicious link"><a href="https://delicious.com/">Delicious</a></li>
+			</ul>
+			<script>
+				var sTitle = {json_encode($oDocument->getTitleText())};
+				jQuery(function($){
+					$('.twitter>a').snspost({
+						type : 'twitter',
+						content : sTitle + ' {$oDocument->getPermanentUrl()}'
+					});
+					$('.facebook>a').snspost({
+						type : 'facebook',
+						content : sTitle
+					});
+					$('.delicious>a').snspost({
+						type : 'delicious',
+						content : sTitle
+					});
+				});
+			</script>
+		</div>
+		<div class="sign" cond="$module_info->display_sign!='N'&&($oDocument->getProfileImage()||$oDocument->getSignature())">
+			<img cond="$oDocument->getProfileImage()" src="{$oDocument->getProfileImage()}" alt="Profile" class="pf" />
+			<div cond="$oDocument->getSignature()" class="tx">{$oDocument->getSignature()}</div>
+		</div>
+		<div class="btnArea">
+			<a cond="$oDocument->isEditable()" class="btn" href="{getUrl('', 'mid', $mid, 'act', 'dispBoardWrite', 'document_srl', $oDocument->document_srl)}">{$lang->cmd_modify}</a>
+			<a cond="$oDocument->isEditable()" class="btn" href="{getUrl('', 'mid', $mid, 'act', 'dispBoardDelete', 'document_srl', $oDocument->document_srl)}">{$lang->cmd_delete}</a>
+			<span class="etc">
+				<a href="{getUrl('document_srl','')}" class="btn">{$lang->cmd_list}</a>
+			</span>
+		</div>
+	</div>
+	<!-- /READ FOOTER -->
+</div>
+<block cond="$oDocument->allowTrackback()">
+	<include target="_trackback.html" />
+</block>
+<include target="_comment.html" />

@@ -1,0 +1,111 @@
+<!-- COMMENT -->
+<div class="feedback" id="comment">
+	<div class="fbHeader">
+		<h2>{$lang->comment} <em>{$oDocument->getCommentcount()}</em></h2>
+	</div>
+	<ul cond="$oDocument->getCommentcount()" class="fbList">
+		<li loop="$oDocument->getComments()=>$key,$comment" class="fbItem"|cond="!$comment->get('depth')" class="fbItem indent indent{($comment->get('depth'))}"|cond="$comment->get('depth')" id="comment_{$comment->comment_srl}">
+			<div class="fbMeta">
+				<img cond="$comment->getProfileImage()" src="{$comment->getProfileImage()}" alt="Profile" class="profile" />
+				<span cond="!$comment->getProfileImage()" class="profile"></span>
+				<div class="meta_text">
+					<h3 class="author">
+						<a cond="$comment->member_srl <= 0 && $comment->homepage" href="{$comment->getHomepageUrl()}">{$comment->getNickName()}</a>
+						<strong cond="$comment->member_srl <= 0 && !$comment->homepage">{$comment->getNickName()}</strong>
+						<a cond="$comment->member_srl > 0" href="#popup_menu_area" class="member_{$comment->member_srl}" onclick="return false">{$comment->getNickName()}</a>
+					</h3>
+					<p class="time">{$comment->getRegdate('Y.m.d H:i')}</p>
+				</div>
+				<div class="fbActions">
+					<a cond="$comment->isGranted()||!$comment->get('member_srl')" href="{getUrl('', 'mid', $mid, 'act', 'dispBoardModifyComment', 'comment_srl', $comment->comment_srl)}" class="act-btn modify" title="{$lang->cmd_modify}">
+						<svg class="act-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+					</a>
+					<a cond="$comment->isGranted()||!$comment->get('member_srl')" href="{getUrl('', 'mid', $mid, 'act', 'dispBoardDeleteComment', 'comment_srl', $comment->comment_srl)}" class="act-btn delete" title="{$lang->cmd_delete}">
+						<svg class="act-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+					</a>
+					<a cond="$is_logged" class="comment_{$comment->comment_srl} act-btn more" href="#popup_menu_area" onclick="return false" title="{$lang->cmd_comment_do}">
+						<svg class="act-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+					</a>
+				</div>
+			</div>
+			<!--@if($comment->status == RX_STATUS_DELETED)-->
+				<div class="rhymix_content xe_content deleted">{$lang->msg_deleted_comment}</div>
+			<!--@elseif($comment->status == RX_STATUS_DELETED_BY_ADMIN)-->
+				<div class="rhymix_content xe_content deleted deleted_by_admin">{$lang->msg_admin_deleted_comment}</div>
+			<!--@elseif(!$comment->isAccessible())-->
+			<form action="./" method="get" class="rhymix_content xe_content" onsubmit="return procFilter(this, input_password)">
+				<p><label for="cpw_{$comment->comment_srl}">{$lang->msg_is_secret} {$lang->msg_input_password}</label></p>
+				<p><input type="password" name="password" id="cpw_{$comment->comment_srl}" class="iText" /><input type="submit" class="btn" value="{$lang->cmd_input}" /></p>
+				<input type="hidden" name="mid" value="{$mid}" />
+				<input type="hidden" name="page" value="{$page}" />
+				<input type="hidden" name="document_srl" value="{$comment->get('document_srl')}" />
+				<input type="hidden" name="comment_srl" value="{$comment->get('comment_srl')}" />
+			</form>
+			<!--@else-->
+				{$comment->getContent(false)}
+			<!--@end-->
+			<div cond="$comment->hasUploadedFiles()" class="fileList">
+				<button type="button" class="toggleFile" onclick="jQuery(this).next('ul.files').toggle();">{$lang->uploaded_file} [<strong>{$comment->get('uploaded_count')}</strong>]</button>
+				<ul class="files">
+					<li loop="$comment->getUploadedFiles()=>$key,$file"><a href="{getUrl('')}{$file->download_url}">{$file->source_filename} <span class="fileSize">[File Size:{FileHandler::filesize($file->file_size)}/Download:{number_format($file->download_count)}]</span></a></li>
+				</ul>
+			</div>
+			<div class="comment_footer">
+				<a cond="$oDocument->allowComment()" href="{getUrl('', 'mid', $mid, 'act', 'dispBoardReplyComment', 'comment_srl', $comment->comment_srl)}" class="reply-btn">
+					<svg class="reply-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
+					<span>답글</span>
+				</a>
+				<span class="comment-vote" cond="$comment->get('voted_count')!=0" title="{$lang->cmd_vote}">
+					<svg class="vote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+					<span>{$comment->get('voted_count')}</span>
+				</span>
+			</div>
+		</li>
+	</ul>
+    <div cond="$oDocument->comment_page_navigation" class="pagination">
+        <a href="{getUrl('cpage',1)}#comment" class="direction prev"><span></span><span></span> {$lang->first_page}</a>
+        <block loop="$page_no=$oDocument->comment_page_navigation->getNextPage()">
+			<strong cond="$cpage==$page_no">{$page_no}</strong>
+			<a cond="$cpage!=$page_no" href="{getUrl('cpage',$page_no)}#comment">{$page_no}</a>
+        </block>
+        <a href="{getUrl('cpage',$oDocument->comment_page_navigation->last_page)}#comment" class="direction next">{$lang->last_page} <span></span><span></span></a>
+    </div>
+	<div id="comment_write_placeholder" style="display:none;"></div>
+	<form cond="$grant->write_comment && $oDocument->isEnableComment()" action="./" method="post" onsubmit="return procFilter(this, insert_comment)" class="write_comment" id="write_comment">
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="document_srl" value="{$oDocument->document_srl}" />
+		<input type="hidden" name="comment_srl" value="" />
+		<input type="hidden" name="parent_srl" value="" />
+		<input type="hidden" name="content" value="" />
+		{$oDocument->getCommentEditor()}
+		<div class="write_author">
+			<span class="item" cond="!$is_logged">
+				<label for="userName" class="iLabel">{$lang->writer}</label>
+				<input type="text" name="nick_name" id="userName" class="iText userName" />
+			</span>
+			<span class="item" cond="!$is_logged">
+				<label for="userPw" class="iLabel">{$lang->password}</label>
+				<input type="password" name="password" id="userPw" class="iText userPw" />
+			</span>
+			<span class="item" cond="!$is_logged">
+				<label for="homePage" class="iLabel">{$lang->homepage}</label>
+				<input type="text" name="homepage" id="homePage" class="iText homePage" />&nbsp;
+			</span>
+			<input cond="$is_logged" type="checkbox" name="notify_message" value="Y" id="notify_message" class="iCheck" />
+			<label cond="$is_logged" for="notify_message">{$lang->notify}</label>
+			<input cond="$module_info->secret=='Y'" type="checkbox" name="is_secret" value="Y" id="is_secret" class="iCheck" />
+			<label cond="$module_info->secret=='Y'" for="is_secret">{$lang->secret}</label>
+		</div>
+		<div class="write_captcha" cond="isset($captcha) && $captcha && $captcha->isTargetAction('comment')">
+			{$captcha}
+		</div>
+		<div class="btnArea">
+			<button type="button" class="btn cancel-reply-btn" style="display:none;">{$lang->cmd_cancel}</button>
+			<button type="submit" class="btn">{$lang->cmd_comment_registration}</button>
+		</div>
+	</form>
+</div>
+<div class="fbFooter">
+	<a href="{getUrl('document_srl','')}" class="btn">{$lang->cmd_list}</a>
+</div>
+<!-- /COMMENT -->
