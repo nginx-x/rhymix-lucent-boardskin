@@ -77,10 +77,6 @@
             <label for="comment_status">{$lang->allow_comment}</label>
             <input type="checkbox" name="allow_trackback" class="iCheck" value="Y" checked="checked"|cond="$oDocument->allowTrackback()" id="allow_trackback" />
             <label for="allow_trackback">{$lang->allow_trackback}</label>
-			<block cond="$is_logged">
-				<input type="checkbox" name="notify_message" class="iCheck" value="Y" checked="checked"|cond="$oDocument->useNotify()" id="notify_message" />
-				<label for="notify_message">{$lang->notify}</label>
-			</block>
 			<!--@if(is_array($status_list))-->
 				<!--@foreach($status_list AS $key=>$value)-->
 				<input type="radio" name="status" value="{$key}" id="{$key}" <!--@if($oDocument->get('status') == $key || ($key == 'PUBLIC' && !$document_srl))-->checked="checked"<!--@end--> />
